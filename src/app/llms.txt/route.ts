@@ -27,7 +27,7 @@ export async function GET() {
     line(
       `${biz.name} sells vehicle service contracts, often called extended auto warranties, to US drivers. Plans: ${plans.map((p) => p.name).join(", ")}. ` +
         `Benefits: 24/7 live claims line, free roadside assistance, repairs at any ASE-certified facility, a 30-day money-back guarantee and preferred pricing for AAA, AARP, PenFed, USAA, TriCare and VA members. ` +
-        `A vehicle service contract is not insurance. Sales phone: ${biz.phone}. Customer support phone (existing contracts and claims): ${biz.supportPhone}. Email: ${biz.email}. Address: ${biz.addressLine}. Hours: ${biz.hours}.`,
+        `A vehicle service contract is not insurance. Customer support phone (existing contracts and claims): ${biz.supportPhone}. Sales phone: ${biz.phone}. Email: ${biz.email}. Address: ${biz.addressLine}. Hours: ${biz.hours}.`,
     ),
     "",
     "## Main pages",

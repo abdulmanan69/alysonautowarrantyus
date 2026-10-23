@@ -54,20 +54,20 @@ export async function SiteFooter() {
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-line">Contact</p>
           <ul className="mt-4 space-y-3 text-[15px]">
             <li>
-              <a href={s.phoneHref} className="flex items-start gap-2.5 transition hover:text-white">
-                <Icon name="phone" size={18} className="mt-0.5 shrink-0 text-line" />
-                <span>
-                  <span className="block text-[11px] font-bold uppercase tracking-wide text-white/45">Sales &amp; free quotes</span>
-                  {s.phone}
-                </span>
-              </a>
-            </li>
-            <li>
               <a href={s.supportPhoneHref} className="flex items-start gap-2.5 transition hover:text-white">
                 <Icon name="headset" size={18} className="mt-0.5 shrink-0 text-line" />
                 <span>
                   <span className="block text-[11px] font-bold uppercase tracking-wide text-white/45">Customer support &amp; claims</span>
                   {s.supportPhone}
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href={s.phoneHref} className="flex items-start gap-2.5 transition hover:text-white">
+                <Icon name="phone" size={18} className="mt-0.5 shrink-0 text-line" />
+                <span>
+                  <span className="block text-[11px] font-bold uppercase tracking-wide text-white/45">Sales &amp; free quotes</span>
+                  {s.phone}
                 </span>
               </a>
             </li>

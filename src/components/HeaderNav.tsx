@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MenuItem } from "@/lib/settings";
 
-type Props = { links: MenuItem[]; phone: string | null; phoneHref: string; supportPhone: string; supportPhoneHref: string; ctaLabel: string; ctaHref: string; siteName: string };
+// `phone` is the customer support line shown in the header; `salesPhone` is the second button in the drawer.
+type Props = { links: MenuItem[]; phone: string | null; phoneHref: string; salesPhone: string; salesPhoneHref: string; ctaLabel: string; ctaHref: string; siteName: string };
 
 const external = (href: string) => /^https?:\/\//.test(href);
 const linkProps = (i: MenuItem) => (i.newTab || external(i.href) ? { target: "_blank", rel: "noopener noreferrer" } : {});
@@ -86,7 +87,7 @@ function Dropdown({ item, active }: { item: MenuItem; active: boolean }) {
 }
 
 /** Phone and tablet menu: a panel that slides in from the right. */
-function Drawer({ open, onClose, links, phone, phoneHref, supportPhone, supportPhoneHref, ctaLabel, ctaHref, siteName, isActive }: Props & { open: boolean; onClose: () => void; isActive: (i: MenuItem) => boolean }) {
+function Drawer({ open, onClose, links, phone, phoneHref, salesPhone, salesPhoneHref, ctaLabel, ctaHref, siteName, isActive }: Props & { open: boolean; onClose: () => void; isActive: (i: MenuItem) => boolean }) {
   const panel = useRef<HTMLDivElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -186,14 +187,14 @@ function Drawer({ open, onClose, links, phone, phoneHref, supportPhone, supportP
             {phone && (
               <a href={phoneHref} className="flex items-center justify-center gap-2 rounded-xl border border-rail px-4 py-3.5 font-semibold text-asphalt">
                 <PhoneIcon />
-                Sales {phone}
+                Support {phone}
               </a>
             )}
-            <a href={supportPhoneHref} className="flex items-center justify-center gap-2 rounded-xl border border-rail px-4 py-3.5 font-semibold text-asphalt">
+            <a href={salesPhoneHref} className="flex items-center justify-center gap-2 rounded-xl border border-rail px-4 py-3.5 font-semibold text-asphalt">
               <PhoneIcon />
-              Support {supportPhone}
+              Sales {salesPhone}
             </a>
-            <p className="text-center text-xs text-road">Already have a contract? Call support for claims and account questions.</p>
+            <p className="text-center text-xs text-road">Support: claims, coverage and account questions. Sales: free quotes for new customers.</p>
           </div>
         )}
       </div>
