@@ -1,0 +1,21 @@
+# Local development database only. Start with `npm run db:up`, stop with `npm run db:down`.
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: alyson
+      POSTGRES_PASSWORD: alyson_dev
+      POSTGRES_DB: alyson
+    ports:
+      - "5432:5432"
+    volumes:
+      - alyson-dev-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alyson -d alyson"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  alyson-dev-data:

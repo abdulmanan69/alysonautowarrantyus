@@ -1,0 +1,409 @@
+// Database schema for the Alyson Auto Warranty platform.
+// PostgreSQL everywhere: locally via docker-compose.dev.yml, in production via docker-compose.yml.
+// After changing a model run `npm run db:migrate -- --name what_changed` to create a migration;
+// the container applies pending migrations when it starts.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Leads (quote requests) ─────────────────────────────────────
+
+// A person who asked for a vehicle service contract quote. Statuses: new | contacted | quoted |
+// sold | lost | unqualified (src/components/admin/statuses.ts).
+model Lead {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status String @default("new")
+  source String @default("quote") // quote = full form, hero = short homepage form, api = created through the API
+
+  firstName String
+  lastName  String
+  email     String
+  phone     String
+  zip       String
+  state     String
+
+  planInterest String @default("not_sure") // platinum | gold | powertrain | not_sure
+  lostReason   String @default("")
+
+  // Marketing attribution
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmTerm     String?
+  utmContent  String?
+  gclid       String?
+  fbclid      String?
+  landingPage String?
+  referrer    String?
+
+  ipAddress          String?
+  userAgent          String?
+  trustedFormCertUrl String?
+
+  // Working the lead
+  assignedToId String?
+  assignedTo   AdminUser? @relation("AssignedLeads", fields: [assignedToId], references: [id], onDelete: SetNull)
+  doNotContact Boolean    @default(false)
+  doNotSell    Boolean    @default(false) // opted out of sale/sharing (form, Global Privacy Control or list)
+  notes        LeadNote[]
+  tasks        LeadTask[]
+
+  vehicles Vehicle[]
+  consent  Consent?
+
+  @@index([createdAt])
+  @@index([status])
+  @@index([phone])
+  @@index([email])
+  @@index([assignedToId])
+}
+
+model Vehicle {
+  id              String  @id @default(cuid())
+  leadId          String
+  lead            Lead    @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  year            Int
+  make            String
+  model           String
+  mileage         Int? // odometer reading (top of the chosen range)
+  ownership       String? // own | finance | lease
+  factoryWarranty String? // yes | no | not_sure
+}
+
+// Proof of TCPA consent. Never delete or edit these rows.
+model Consent {
+  id             String   @id @default(cuid())
+  leadId         String   @unique
+  lead           Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  consentText    String
+  consentVersion String
+  ipAddress      String
+  userAgent      String
+  pageUrl        String
+  createdAt      DateTime @default(now())
+}
+
+model LeadNote {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  leadId    String
+  lead      Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    AdminUser? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  body      String
+
+  @@index([leadId])
+}
+
+model LeadTask {
+  id         String     @id @default(cuid())
+  createdAt  DateTime   @default(now())
+  leadId     String
+  lead       Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  assigneeId String?
+  assignee   AdminUser? @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+  title      String
+  dueAt      DateTime
+  doneAt     DateTime?
+
+  @@index([leadId])
+  @@index([assigneeId, doneAt])
+}
+
+// ── Contact form messages ──────────────────────────────────────
+
+// Messages from /contact. status: new | read | replied | archived
+model ContactMessage {
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  status      String     @default("new")
+  name        String
+  email       String
+  phone       String     @default("")
+  subject     String     @default("")
+  message     String
+  pageUrl     String     @default("")
+  ipAddress   String?
+  userAgent   String?
+  handledById String?
+  handledBy   AdminUser? @relation("HandledMessages", fields: [handledById], references: [id], onDelete: SetNull)
+  staffNote   String     @default("")
+
+  @@index([status, createdAt])
+  @@index([email])
+}
+
+// ── Protection plans ───────────────────────────────────────────
+
+// The plans shown at /plans and /plans/<slug>. Managed in /admin/plans; defaults are created
+// on first use (src/lib/plans.ts).
+model Plan {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  slug           String   @unique
+  name           String
+  tagline        String   @default("")
+  summary        String   @default("") // one paragraph for cards and the plans overview
+  description    String   @default("") // sanitized HTML for the plan page
+  features       String   @default("[]") // JSON array of strings: what the plan includes
+  exclusions     String   @default("[]") // JSON array of strings
+  bestFor        String   @default("")
+  maxMileage     Int?
+  badge          String   @default("") // e.g. "Most popular"
+  icon           String   @default("shield") // shield | star | engine | wrench
+  kind           String   @default("coverage") // coverage | maintenance
+  sortOrder      Int      @default(0)
+  active         Boolean  @default(true)
+  featured       Boolean  @default(false)
+  seoTitle       String   @default("")
+  seoDescription String   @default("")
+
+  @@index([active, sortOrder])
+}
+
+// ── System ─────────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  actor     String // system | public | api:<key> | <admin email>
+  action    String
+  entity    String
+  entityId  String
+  detail    String?
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+// Admin-editable settings (business details, SEO, tracking, content, menus…). Values are JSON.
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+// ── Admin accounts ─────────────────────────────────────────────
+// role: owner (everything, incl. users) | admin (everything except users) | agent (leads and
+// messages only) | writer (blog only)
+model AdminUser {
+  id           String           @id @default(cuid())
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  email        String           @unique
+  name         String
+  role         String           @default("agent")
+  passwordHash String
+  totpSecret   String?
+  totpEnabled  Boolean          @default(false)
+  active       Boolean          @default(true)
+  lastLoginAt  DateTime?
+  bio          String           @default("")
+  avatarId     String?
+  sessions     AdminSession[]
+  leads        Lead[]           @relation("AssignedLeads")
+  messages     ContactMessage[] @relation("HandledMessages")
+  notes        LeadNote[]
+  tasks        LeadTask[]
+  posts        Post[]           @relation("PostAuthor")
+  revisions    PostRevision[]
+  apiKeys      ApiKey[]
+}
+
+// Browser sessions. Only a SHA-256 hash of the cookie token is stored.
+model AdminSession {
+  id         String    @id @default(cuid())
+  tokenHash  String    @unique
+  userId     String
+  user       AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime
+  mfaPending Boolean   @default(false)
+  ipAddress  String?
+  userAgent  String?
+
+  @@index([userId])
+}
+
+// Keys for the API (/api/v1). Only a SHA-256 hash of the key is stored; the key itself is shown
+// once when created. Requests act as the admin user who created the key, limited by `scopes`
+// (comma-separated: blog, content, leads) and by whether the key may publish.
+model ApiKey {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  name       String
+  prefix     String
+  tokenHash  String    @unique
+  userId     String
+  user       AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scopes     String    @default("blog")
+  canPublish Boolean   @default(false)
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+
+  @@index([userId])
+}
+
+// ── Blog ───────────────────────────────────────────────────────
+
+// status: draft | review | published. A published post with a future publishedAt is scheduled.
+model Post {
+  id             String         @id @default(cuid())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  title          String
+  slug           String         @unique
+  excerpt        String         @default("")
+  content        String         @default("")
+  status         String         @default("draft")
+  publishedAt    DateTime?
+  featured       Boolean        @default(false)
+  readingMinutes Int            @default(1)
+  views          Int            @default(0)
+  coverImageId   String?
+  coverAlt       String         @default("")
+  seoTitle       String         @default("")
+  seoDescription String         @default("")
+  noindex        Boolean        @default(false)
+  authorId       String
+  author         AdminUser      @relation("PostAuthor", fields: [authorId], references: [id])
+  categoryId     String?
+  category       Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags           Tag[]
+  revisions      PostRevision[]
+
+  @@index([status, publishedAt])
+  @@index([authorId])
+  @@index([categoryId])
+}
+
+model Category {
+  id          String @id @default(cuid())
+  name        String
+  slug        String @unique
+  description String @default("")
+  sortOrder   Int    @default(0)
+  posts       Post[]
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String
+  slug  String @unique
+  posts Post[]
+}
+
+model PostRevision {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  postId    String
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  editorId  String
+  editor    AdminUser @relation(fields: [editorId], references: [id])
+  title     String
+  excerpt   String
+  content   String
+
+  @@index([postId, createdAt])
+}
+
+// Uploaded images, stored in the database so they are included in backups; served from /media/<id>.
+model Media {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  uploaderId String?
+  fileName   String
+  mime       String
+  width      Int
+  height     Int
+  size       Int
+  alt        String   @default("")
+  data       Bytes
+
+  @@index([createdAt])
+}
+
+// Pages built in /admin/pages, served at /<slug>.
+model Page {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  title          String
+  slug           String   @unique
+  intro          String   @default("")
+  content        String   @default("")
+  status         String   @default("draft")
+  layout         String   @default("standard")
+  showQuoteCta   Boolean  @default(true)
+  coverImageId   String?
+  coverAlt       String   @default("")
+  seoTitle       String   @default("")
+  seoDescription String   @default("")
+  noindex        Boolean  @default(false)
+  updatedById    String?
+
+  @@index([status])
+}
+
+// ── Privacy ────────────────────────────────────────────────────
+
+// People who asked not to be contacted. New leads that match are flagged automatically.
+model Suppression {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  email     String?
+  phone     String?
+  reason    String?
+  type      String   @default("dnc") // dnc | do_not_sell
+
+  @@index([email])
+  @@index([phone])
+}
+
+// Requests from the public privacy form (/do-not-sell).
+model PrivacyRequest {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  type        String // opt_out_sale | opt_out_contact | access | delete | correct
+  status      String    @default("new") // new | in_progress | completed | denied
+  firstName   String
+  lastName    String
+  email       String
+  phone       String    @default("")
+  state       String    @default("")
+  details     String    @default("")
+  viaAgent    Boolean   @default(false)
+  dueAt       DateTime
+  completedAt DateTime?
+  staffNote   String    @default("")
+  leadsFound  Int       @default(0)
+  ipAddress   String?
+  userAgent   String?
+
+  @@index([status, dueAt])
+  @@index([email])
+}
+
+// Anonymous quote-form progress, for the drop-off report. No personal data.
+model FunnelEvent {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  sessionId String
+  step      Int // 0-3 = form steps, 4 = submitted
+
+  @@index([createdAt])
+  @@unique([sessionId, step])
+}
