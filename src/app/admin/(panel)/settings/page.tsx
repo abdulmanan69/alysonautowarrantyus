@@ -52,7 +52,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <Card title="Business details">
           <form action={saveBusiness} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="Phone shown on the website" htmlFor="b-phone"><input id="b-phone" name="phone" defaultValue={business.phone} required className={inputCls} /></FormField>
+              <FormField label="Sales phone (quotes, new customers)" htmlFor="b-phone" hint="Header, hero, plan pages, quote form and every quote button."><input id="b-phone" name="phone" defaultValue={business.phone} required className={inputCls} /></FormField>
+              <FormField label="Customer support phone (existing customers)" htmlFor="b-support" hint="Claims, FAQ, Contact, About, legal pages and the footer. Leave empty to use the sales number."><input id="b-support" name="supportPhone" defaultValue={business.supportPhone} className={inputCls} /></FormField>
               <FormField label="Business hours" htmlFor="b-hours"><input id="b-hours" name="hours" defaultValue={business.hours} maxLength={120} className={inputCls} /></FormField>
               <FormField label="Support email" htmlFor="b-email"><input id="b-email" name="email" type="email" defaultValue={business.email} required className={inputCls} /></FormField>
               <FormField label="Claims / invoices email" htmlFor="b-claims"><input id="b-claims" name="claimsEmail" type="email" defaultValue={business.claimsEmail} required className={inputCls} /></FormField>

@@ -11,8 +11,10 @@ export const site = {
   // Official profile pages on other sites (Facebook, Instagram, LinkedIn, BBB…). Shown in the
   // footer and added to the Organization data as sameAs.
   social: { facebook: "", instagram: "", linkedin: "", x: "", youtube: "" },
-  phone: "(346) 229-3922",
+  phone: "(346) 229-3922", // sales: quotes and new customers
   phoneHref: "tel:+13462293922",
+  supportPhone: "(866) 213-0927", // customer support: existing contracts, claims, account questions
+  supportPhoneHref: "tel:+18662130927",
   email: "support@alysonautowarranty.com",
   claimsEmail: "info@alysonautowarranty.com",
   address: { street: "8907 Creeks Gate Ct", city: "Richmond", state: "TX", zip: "77407" },

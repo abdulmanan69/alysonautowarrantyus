@@ -20,13 +20,19 @@ export async function SiteHeader() {
               <span className="truncate">{s.addressLine}</span>
             </p>
             <div className="flex shrink-0 items-center gap-5">
-              <span className="hidden items-center gap-1.5 md:inline-flex">
+              <span className="hidden items-center gap-1.5 xl:inline-flex">
                 <Icon name="clock" size={15} />
                 {s.hours}
               </span>
-              <a href={s.phoneHref} className="inline-flex items-center gap-1.5 hover:underline">
+              <a href={s.phoneHref} title="Sales and free quotes" className="inline-flex items-center gap-1.5 hover:underline">
                 <Icon name="phone" size={15} />
+                <span className="hidden text-asphalt/70 lg:inline">Sales</span>
                 {s.phone}
+              </a>
+              <a href={s.supportPhoneHref} title="Customer support for existing contracts and claims" className="hidden items-center gap-1.5 hover:underline sm:inline-flex">
+                <Icon name="headset" size={15} />
+                <span className="hidden text-asphalt/70 lg:inline">Support</span>
+                {s.supportPhone}
               </a>
             </div>
           </div>
@@ -47,7 +53,7 @@ export async function SiteHeader() {
           <Link href="/" aria-label={`${site.name} home`} className="shrink-0">
             <img src="/brand/logo.webp" alt={site.name} width={400} height={321} className="h-14 w-auto sm:h-16" fetchPriority="high" />
           </Link>
-          <HeaderNav links={nav.links} phone={nav.showPhone ? s.phone : null} phoneHref={s.phoneHref} ctaLabel={nav.ctaLabel} ctaHref={nav.ctaHref} siteName={site.name} />
+          <HeaderNav links={nav.links} phone={nav.showPhone ? s.phone : null} phoneHref={s.phoneHref} supportPhone={s.supportPhone} supportPhoneHref={s.supportPhoneHref} ctaLabel={nav.ctaLabel} ctaHref={nav.ctaHref} siteName={site.name} />
         </div>
       </header>
     </>

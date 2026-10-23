@@ -12,7 +12,8 @@ export type AiSettings = { allowSearchBots: boolean; allowTrainingBots: boolean;
 export type SeoSettings = { title: string; description: string };
 
 export type BusinessSettings = {
-  phone: string;
+  phone: string; // sales line: quote buttons, plan pages, header
+  supportPhone: string; // customer support line: claims, FAQ, contact, legal pages, footer
   email: string;
   claimsEmail: string;
   street: string;
@@ -105,6 +106,7 @@ export const DEFAULTS = {
   seo: { title: "", description: "" } as SeoSettings,
   business: {
     phone: site.phone,
+    supportPhone: site.supportPhone,
     email: site.email,
     claimsEmail: site.claimsEmail,
     street: site.address.street,
@@ -364,6 +366,8 @@ export async function getSite() {
     address,
     addressLine: formatAddress(address),
     phoneHref: telHref(business.phone),
+    supportPhone: business.supportPhone || business.phone,
+    supportPhoneHref: telHref(business.supportPhone || business.phone),
     sameAs: Object.values(business.social).filter((u) => /^https:\/\//.test(u)),
   };
 }

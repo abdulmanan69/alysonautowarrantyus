@@ -40,15 +40,19 @@ export default async function ContactPage() {
         <div className="rounded-3xl border border-rail bg-white p-6 shadow-card sm:p-8">
           <h2 className="text-2xl font-extrabold text-asphalt">Send us a message</h2>
           <p className="mt-1 text-road">We reply during business hours, usually the same day.</p>
-          <div className="mt-6"><ContactForm phone={biz.phone} /></div>
+          <div className="mt-6"><ContactForm phone={biz.supportPhone} /></div>
         </div>
 
         <aside className="space-y-5">
           <div className="rounded-3xl bg-ink p-7 text-white">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-line">Call us</p>
-            <a href={biz.phoneHref} className="mt-2 block text-3xl font-extrabold hover:text-line">{biz.phone}</a>
-            <p className="mt-2 flex items-center gap-2 text-sm text-white/70"><Icon name="clock" size={16} /> {biz.hours}</p>
-            <p className="mt-4 text-sm leading-relaxed text-white/70">Claims line open 24/7 for mechanical breakdowns. For maintenance claims, email your invoice within 45 days of service.</p>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-line">Already have a contract? Customer support</p>
+            <a href={biz.supportPhoneHref} className="mt-2 block text-3xl font-extrabold hover:text-line">{biz.supportPhone}</a>
+            <p className="mt-2 text-sm leading-relaxed text-white/70">Claims, coverage questions, cancellations and account changes. Claims line open 24/7 for mechanical breakdowns; for maintenance claims, email your invoice within 45 days of service.</p>
+            <div className="mt-6 border-t border-white/10 pt-5">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-line">New customers &amp; free quotes</p>
+              <a href={biz.phoneHref} className="mt-2 block text-2xl font-extrabold hover:text-line">{biz.phone}</a>
+              <p className="mt-2 flex items-center gap-2 text-sm text-white/70"><Icon name="clock" size={16} /> {biz.hours}</p>
+            </div>
           </div>
           <ul className="space-y-4 rounded-3xl border border-rail p-7 text-[15px]">
             <li className="flex items-start gap-3">

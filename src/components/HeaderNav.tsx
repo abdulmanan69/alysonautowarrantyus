@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MenuItem } from "@/lib/settings";
 
-type Props = { links: MenuItem[]; phone: string | null; phoneHref: string; ctaLabel: string; ctaHref: string; siteName: string };
+type Props = { links: MenuItem[]; phone: string | null; phoneHref: string; supportPhone: string; supportPhoneHref: string; ctaLabel: string; ctaHref: string; siteName: string };
 
 const external = (href: string) => /^https?:\/\//.test(href);
 const linkProps = (i: MenuItem) => (i.newTab || external(i.href) ? { target: "_blank", rel: "noopener noreferrer" } : {});
@@ -86,7 +86,7 @@ function Dropdown({ item, active }: { item: MenuItem; active: boolean }) {
 }
 
 /** Phone and tablet menu: a panel that slides in from the right. */
-function Drawer({ open, onClose, links, phone, phoneHref, ctaLabel, ctaHref, siteName, isActive }: Props & { open: boolean; onClose: () => void; isActive: (i: MenuItem) => boolean }) {
+function Drawer({ open, onClose, links, phone, phoneHref, supportPhone, supportPhoneHref, ctaLabel, ctaHref, siteName, isActive }: Props & { open: boolean; onClose: () => void; isActive: (i: MenuItem) => boolean }) {
   const panel = useRef<HTMLDivElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -186,9 +186,14 @@ function Drawer({ open, onClose, links, phone, phoneHref, ctaLabel, ctaHref, sit
             {phone && (
               <a href={phoneHref} className="flex items-center justify-center gap-2 rounded-xl border border-rail px-4 py-3.5 font-semibold text-asphalt">
                 <PhoneIcon />
-                Call {phone}
+                Sales {phone}
               </a>
             )}
+            <a href={supportPhoneHref} className="flex items-center justify-center gap-2 rounded-xl border border-rail px-4 py-3.5 font-semibold text-asphalt">
+              <PhoneIcon />
+              Support {supportPhone}
+            </a>
+            <p className="text-center text-xs text-road">Already have a contract? Call support for claims and account questions.</p>
           </div>
         )}
       </div>

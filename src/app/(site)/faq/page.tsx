@@ -20,7 +20,7 @@ export default async function FaqPage() {
   return (
     <>
       <PageHero eyebrow="Frequently asked questions" title={<>Our <span className="mark mark-dark">FAQs</span></>} intro="Quick answers about extended auto warranties, also called vehicle service contracts: what they include, what they cost and how they work." crumbs={[{ name: "FAQ", href: "/faq" }]} />
-      <FaqSection faqs={faqs} phone={biz.phone} phoneHref={biz.phoneHref} bare withSchema />
+      <FaqSection faqs={faqs} phone={biz.supportPhone} phoneHref={biz.supportPhoneHref} bare withSchema />
       <QuoteBanner phone={biz.phone} phoneHref={biz.phoneHref} />
     </>
   );

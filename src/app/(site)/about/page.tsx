@@ -72,7 +72,7 @@ export default async function AboutPage() {
 
           <h2>Contact us</h2>
           <p>
-            Call <a href={biz.phoneHref}>{biz.phone}</a>, email <a href={`mailto:${biz.email}`}>{biz.email}</a> or write to {biz.addressLine}. You can also use our <Link href="/contact">contact form</Link> and read our <Link href="/terms">Terms and Conditions</Link>.
+            New customers can call <a href={biz.phoneHref}>{biz.phone}</a>; existing customers can reach support at <a href={biz.supportPhoneHref}>{biz.supportPhone}</a>. You can also email <a href={`mailto:${biz.email}`}>{biz.email}</a> or write to {biz.addressLine}. You can also use our <Link href="/contact">contact form</Link> and read our <Link href="/terms">Terms and Conditions</Link>.
           </p>
         </div>
         <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
@@ -81,6 +81,8 @@ export default async function AboutPage() {
             <a href={biz.phoneHref} className="mt-2 block text-2xl font-extrabold hover:text-line">{biz.phone}</a>
             <p className="mt-1 text-sm text-white/70">{biz.hours}</p>
             <Link href="/quote" className="btn-primary mt-5 w-full">Get my free quote <Icon name="arrow" size={18} strokeWidth={2.4} /></Link>
+            <p className="mt-5 border-t border-white/10 pt-4 text-xs font-bold uppercase tracking-[0.14em] text-line">Existing customers</p>
+            <a href={biz.supportPhoneHref} className="mt-1 block text-lg font-extrabold hover:text-line">{biz.supportPhone}</a>
           </div>
           <ul className="space-y-2 rounded-3xl border border-rail p-6 text-sm">
             {content.about.points.map((p) => (

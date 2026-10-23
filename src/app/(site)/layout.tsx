@@ -12,6 +12,7 @@ import { site } from "@/lib/site";
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const [biz, { tracking, legal }] = await Promise.all([getSite(), getSettings()]);
   const phone = biz.phoneHref.replace("tel:", "");
+  const support = biz.supportPhoneHref.replace("tel:", "");
 
   // Tells search engines who runs the site and how to reach them.
   const organizationSchema = {
@@ -33,8 +34,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         address: { "@type": "PostalAddress", streetAddress: biz.address.street, addressLocality: biz.address.city, addressRegion: biz.address.state, postalCode: biz.address.zip, addressCountry: "US" },
         areaServed: { "@type": "Country", name: "United States" },
         contactPoint: [
-          { "@type": "ContactPoint", telephone: phone, contactType: "customer service", areaServed: "US", availableLanguage: "English" },
-          { "@type": "ContactPoint", telephone: phone, contactType: "claims", email: biz.claimsEmail, areaServed: "US", availableLanguage: "English" },
+          { "@type": "ContactPoint", telephone: phone, contactType: "sales", areaServed: "US", availableLanguage: "English" },
+          { "@type": "ContactPoint", telephone: support, contactType: "customer service", email: biz.email, areaServed: "US", availableLanguage: "English" },
+          { "@type": "ContactPoint", telephone: support, contactType: "claims", email: biz.claimsEmail, areaServed: "US", availableLanguage: "English" },
         ],
         ...(biz.sameAs.length ? { sameAs: biz.sameAs } : {}),
       },

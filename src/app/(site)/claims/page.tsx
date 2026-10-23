@@ -29,7 +29,7 @@ export default async function ClaimsPage() {
     description,
     step: [
       { "@type": "HowToStep", name: "Stop driving and get the car to a shop", text: "If a covered part fails, stop driving to prevent further damage and take the vehicle to any ASE-certified repair facility." },
-      { "@type": "HowToStep", name: "Call the claims department before repairs begin", text: `Call ${biz.phone} (${c.hours}) so the shop's diagnosis can be reviewed and the repair authorized.` },
+      { "@type": "HowToStep", name: "Call the claims department before repairs begin", text: `Call ${biz.supportPhone} (${c.hours}) so the shop's diagnosis can be reviewed and the repair authorized.` },
       { "@type": "HowToStep", name: "Authorized repairs are paid", text: "Once authorized, covered repairs are paid to the shop per your contract; you pay only your deductible and any non-covered items." },
     ],
   };
@@ -45,10 +45,10 @@ export default async function ClaimsPage() {
         media={
           <aside className="rounded-3xl bg-white p-7 text-asphalt shadow-lift">
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-road">Claims line</p>
-            <a href={biz.phoneHref} className="mt-2 block text-3xl font-extrabold hover:text-brand-deep sm:text-4xl">{biz.phone}</a>
+            <a href={biz.supportPhoneHref} className="mt-2 block text-3xl font-extrabold hover:text-brand-deep sm:text-4xl">{biz.supportPhone}</a>
             <p className="mt-2 flex items-center gap-2 text-sm text-road"><Icon name="clock" size={16} /> {c.hours}</p>
             <p className="mt-4 text-sm leading-relaxed text-road">For mechanical breakdowns, call <strong className="text-asphalt">before</strong> the shop starts work so the repair can be authorized.</p>
-            <a href={biz.phoneHref} className="btn-primary mt-5 w-full"><Icon name="phone" size={18} /> Call to start a claim</a>
+            <a href={biz.supportPhoneHref} className="btn-primary mt-5 w-full"><Icon name="phone" size={18} /> Call to start a claim</a>
           </aside>
         }
       />
@@ -59,7 +59,7 @@ export default async function ClaimsPage() {
           <ol className="mt-12 grid gap-6 md:grid-cols-3">
             {[
               ["Get the car to a shop", "If a covered part fails, stop driving to prevent further damage and take the vehicle to any ASE-certified repair facility, including your trusted local mechanic."],
-              ["Call us before work begins", `Call ${biz.phone} during claims hours. We review the shop's diagnosis and authorize the covered repair under your contract.`],
+              ["Call us before work begins", `Call ${biz.supportPhone} during claims hours. We review the shop's diagnosis and authorize the covered repair under your contract.`],
               ["Pay only your deductible", "Authorized repairs are paid to the shop per your contract. You pay your deductible and any items that aren't covered, then drive away."],
             ].map(([t, b], i) => (
               <li key={t} className="relative rounded-3xl border border-rail p-7">
@@ -79,7 +79,7 @@ export default async function ClaimsPage() {
             <h2 className="mt-5 text-2xl font-extrabold text-asphalt">Maintenance claims</h2>
             <p className="mt-3 leading-relaxed text-road">{fillCompany(c.maintenanceIntro)}</p>
             <ul className="mt-5 space-y-3 text-[15px]">
-              <li className="flex items-start gap-3"><Icon name="phone" size={18} className="mt-0.5 shrink-0 text-brand-deep" /><span>Call <a href={biz.phoneHref} className="font-bold text-asphalt hover:text-brand-deep">{biz.phone}</a></span></li>
+              <li className="flex items-start gap-3"><Icon name="phone" size={18} className="mt-0.5 shrink-0 text-brand-deep" /><span>Call <a href={biz.supportPhoneHref} className="font-bold text-asphalt hover:text-brand-deep">{biz.supportPhone}</a></span></li>
               <li className="flex items-start gap-3"><Icon name="mail" size={18} className="mt-0.5 shrink-0 text-brand-deep" /><span>Email your invoice to <a href={`mailto:${biz.claimsEmail}`} className="font-bold text-asphalt hover:text-brand-deep">{biz.claimsEmail}</a></span></li>
               <li className="flex items-start gap-3"><Icon name="clock" size={18} className="mt-0.5 shrink-0 text-brand-deep" /><span>{c.maintenanceHours}</span></li>
             </ul>

@@ -95,9 +95,13 @@ export async function saveSeo(f: FormData) {
 
 export async function saveBusiness(f: FormData) {
   const me = await requireAdmin("admin");
-  const phone = val(f, "phone");
-  const digits = phone.replace(/\D/g, "").replace(/^1(?=\d{10}$)/, "");
-  if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(digits)) back({ error: "Enter a valid US phone number, e.g. (346) 229-3922." });
+  const toDigits = (raw: string) => raw.replace(/\D/g, "").replace(/^1(?=\d{10}$)/, "");
+  const pretty = (d: string) => `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+  const validUs = (d: string) => /^[2-9]\d{2}[2-9]\d{6}$/.test(d);
+  const digits = toDigits(val(f, "phone"));
+  if (!validUs(digits)) back({ error: "Enter a valid US sales phone number, e.g. (346) 229-3922." });
+  const supportDigits = toDigits(val(f, "supportPhone"));
+  if (supportDigits && !validUs(supportDigits)) back({ error: "Enter a valid US customer support phone number, e.g. (866) 213-0927, or leave it empty." });
   const emailOk = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
   const email = val(f, "email");
   const claimsEmail = val(f, "claimsEmail") || email;
@@ -122,7 +126,8 @@ export async function saveBusiness(f: FormData) {
   };
   const consentVersion = nextVersion(consentText, current.consentText, current.consentVersion);
   const value = {
-    phone: `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`,
+    phone: pretty(digits),
+    supportPhone: supportDigits ? pretty(supportDigits) : "",
     email,
     claimsEmail,
     street: val(f, "street").slice(0, 120),
